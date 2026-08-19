@@ -31,7 +31,7 @@ dependencies:
   excel: ^4.0.2
   pdf: ^3.11.0
   printing: ^5.13.1
-  file_picker: ^8.0.5
+  file_picker: ^10.1.2
   share_plus: ^9.0.0
 
   # Misc
@@ -50,6 +50,7 @@ dev_dependencies:
 # "compileSdkVersion is not specified" against newer AGP.
 dependency_overrides:
   app_links: ^6.3.2
+  file_picker: ^10.1.2
 
 flutter:
   uses-material-design: true
