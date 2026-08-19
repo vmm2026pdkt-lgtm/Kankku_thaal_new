@@ -39,6 +39,24 @@ jobs:
           fi
           cat "$MANIFEST"
 
+      # Bump compileSdk to 36 — newer plugins (flutter_plugin_android_lifecycle,
+      # required transitively by file_picker etc.) require compiling against
+      # API 36+, higher than Flutter's current default compileSdkVersion.
+      - name: Bump compileSdk to 36
+        run: |
+          GROOVY=android/app/build.gradle
+          KOTLIN=android/app/build.gradle.kts
+          if [ -f "$GROOVY" ]; then
+            sed -i 's/compileSdk\(Version\)\? flutter\.compileSdkVersion/compileSdk 36/' "$GROOVY"
+            sed -i 's/compileSdk\(Version\)\? [0-9]\+/compileSdk 36/' "$GROOVY"
+            grep -n compileSdk "$GROOVY" || true
+          fi
+          if [ -f "$KOTLIN" ]; then
+            sed -i 's/compileSdk = flutter\.compileSdkVersion/compileSdk = 36/' "$KOTLIN"
+            sed -i 's/compileSdk = [0-9]\+/compileSdk = 36/' "$KOTLIN"
+            grep -n compileSdk "$KOTLIN" || true
+          fi
+
       - name: Get packages
         run: flutter pub get
 
