@@ -39,10 +39,20 @@ jobs:
           fi
           cat "$MANIFEST"
 
-      # Bump compileSdk to 36 — newer plugins (flutter_plugin_android_lifecycle,
-      # required transitively by file_picker etc.) require compiling against
-      # API 36+, higher than Flutter's current default compileSdkVersion.
-      - name: Bump compileSdk to 36
+      # Bump compileSdk to 36 via Flutter's documented local.properties override
+      # mechanism (more reliable than sed-patching build.gradle/.kts, whose
+      # exact syntax can vary between Flutter template versions).
+      - name: Bump compileSdk to 36 (via local.properties)
+        run: |
+          {
+            echo "flutter.compileSdkVersion=36"
+            echo "flutter.targetSdkVersion=36"
+          } >> android/local.properties
+          cat android/local.properties
+
+      # Fallback: also try direct sed patch in case this template version
+      # hardcodes compileSdk instead of reading local.properties.
+      - name: Bump compileSdk to 36 (fallback sed patch)
         run: |
           GROOVY=android/app/build.gradle
           KOTLIN=android/app/build.gradle.kts
