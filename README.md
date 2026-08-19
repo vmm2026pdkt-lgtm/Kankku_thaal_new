@@ -52,7 +52,7 @@ Output: `build/app/outputs/flutter-apk/app-release.apk`
 
 ## ⚠️ Build பண்றதுக்கு முன் கவனிக்க வேண்டியவை
 
-1. **`android/` folder incomplete-ஆ இருக்கும்** — நான் `AndroidManifest.xml` மட்டும் தந்திருக்கேன் (app label + INTERNET permission உடன்). மீதி Gradle files (`build.gradle`, `gradle-wrapper` etc.) GitHub Actions workflow-ல் `flutter create --platforms=android .` command மூலம் தானாகவே fill ஆகும். Local-ல் build பண்ணனும்னா நீங்களும் இதே command run பண்ணனும் (உங்க existing `AndroidManifest.xml`-ஐ overwrite செய்யாது).
+1. **`android/` folder repo-ல் இல்லை** — CI-ல் `flutter create --platforms=android .` command மூலம் ஒவ்வொரு build-லும் புதுசா generate ஆகும் (Flutter/Gradle version mismatch problems தவிர்க்க). App label + INTERNET permission அடுத்த step-ல் தானாகவே patch ஆகும். Local-ல் build பண்ணனும்னா, முதலில் `flutter create --platforms=android --project-name kanakku_thaal .` run பண்ணுங்க.
 2. **App icon** — default Flutter icon தான் இப்போ இருக்கு. உங்க web app-ல் இருக்கிற `icons/icon-512.png`-ஐ Android launcher icon ஆக மாத்த `flutter_launcher_icons` package பயன்படுத்தலாம் (README-க்கு கீழே optional step).
 3. **Release signing** — இப்போதைய workflow **debug-signed** APK/AAB தான் தரும் (testing-க்கு போதும்). Play Store-க்கு அனுப்ப **release keystore** உருவாக்கி, `android/key.properties` + workflow-ல் GitHub Secrets சேர்க்க வேண்டும் (இது 5-ஆவது கட்டமா பின்னாடி செய்யலாம்).
 4. **Font** — `NotoSansTamil` font family theme-ல் reference பண்ணப்பட்டிருக்கு, ஆனா font file சேர்க்கப்படலை (system default Tamil font fallback ஆகும்). சேர்க்க வேண்டுமா சொல்லுங்க, `pubspec.yaml`-ல் font entry + font file உடன் தருகிறேன்.

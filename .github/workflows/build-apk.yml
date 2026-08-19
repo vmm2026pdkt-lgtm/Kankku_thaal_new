@@ -21,11 +21,23 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
-      # Fills in any missing Android/iOS platform scaffolding
-      # (build.gradle, gradle wrapper, etc.) without touching
-      # files that already exist in this repo (e.g. AndroidManifest.xml).
-      - name: Ensure Android platform files exist
+      # Generates the FULL android/ folder fresh (build.gradle, settings.gradle,
+      # gradle wrapper, AndroidManifest.xml, etc.) matching this exact Flutter/AGP
+      # version, so there's no mismatch between hand-edited files and the
+      # generated Gradle build system (this caused the earlier build failures).
+      - name: Generate Android platform files
         run: flutter create --platforms=android --project-name kanakku_thaal .
+
+      # Patch the freshly generated AndroidManifest.xml: app label (Tamil) +
+      # INTERNET permission (needed for Supabase network calls).
+      - name: Patch AndroidManifest (label + internet permission)
+        run: |
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="kanakku_thaal"/android:label="கணக்கு தாள்"/' "$MANIFEST"
+          if ! grep -q 'android.permission.INTERNET' "$MANIFEST"; then
+            sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android">#<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>#' "$MANIFEST"
+          fi
+          cat "$MANIFEST"
 
       - name: Get packages
         run: flutter pub get
