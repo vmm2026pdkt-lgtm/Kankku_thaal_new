@@ -44,5 +44,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
 
+# Forces a newer app_links (a transitive dep of supabase_flutter, used for
+# auth deep links) that supports the Android Gradle Plugin version bundled
+# with recent Flutter releases. Older app_links versions fail to build with
+# "compileSdkVersion is not specified" against newer AGP.
+dependency_overrides:
+  app_links: ^6.3.2
+
 flutter:
   uses-material-design: true
