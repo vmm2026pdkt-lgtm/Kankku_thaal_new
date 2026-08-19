@@ -18,8 +18,8 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
           channel: 'stable'
+          cache: true
 
       # Generates the FULL android/ folder fresh (build.gradle, settings.gradle,
       # gradle wrapper, AndroidManifest.xml, etc.) matching this exact Flutter/AGP
