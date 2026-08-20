@@ -56,7 +56,7 @@ class _EntryFormSheetState extends ConsumerState<_EntryFormSheet> {
     return Padding(
       padding: EdgeInsets.only(
         left: 18, right: 18, top: 18,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 18,
+        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 18,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
