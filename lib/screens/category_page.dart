@@ -70,31 +70,37 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
             ),
           ),
           Center(
-            child: Text('மொத்த செலவு: ${fmt(total)}', style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold, fontSize: 16)),
+            child: Text('மொத்த செலவு: ${fmt(total)}', style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.w800, fontSize: 17)),
           ),
-          const SizedBox(height: 20),
-          ...List.generate(sortedEntries.length, (i) {
-            final entry = sortedEntries[i];
-            final cat = expCats.where((c) => c.id == entry.key).toList();
-            final catName = cat.isNotEmpty ? cat.first.name : entry.key;
-            final catIcon = cat.isNotEmpty ? cat.first.icon : '📌';
-            final color = Color(DefaultCategories.catColors[i % DefaultCategories.catColors.length]);
-            final pct = (entry.value / total * 100);
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-                  const SizedBox(width: 8),
-                  Text(catIcon), const SizedBox(width: 6),
-                  Expanded(child: Text(catName)),
-                  Text('${pct.toStringAsFixed(1)}%', style: const TextStyle(color: AppColors.muted, fontSize: 12)),
-                  const SizedBox(width: 10),
-                  Text(fmt(entry.value), style: const TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            );
-          }),
+          const SizedBox(height: 18),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: glassCard(radius: 18),
+            child: Column(
+              children: List.generate(sortedEntries.length, (i) {
+                final entry = sortedEntries[i];
+                final cat = expCats.where((c) => c.id == entry.key).toList();
+                final catName = cat.isNotEmpty ? cat.first.name : entry.key;
+                final catIcon = cat.isNotEmpty ? cat.first.icon : '📌';
+                final color = Color(DefaultCategories.catColors[i % DefaultCategories.catColors.length]);
+                final pct = (entry.value / total * 100);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  child: Row(
+                    children: [
+                      Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+                      const SizedBox(width: 10),
+                      Text(catIcon), const SizedBox(width: 6),
+                      Expanded(child: Text(catName, style: AppText.body)),
+                      Text('${pct.toStringAsFixed(1)}%', style: AppText.caption),
+                      const SizedBox(width: 10),
+                      Text(fmt(entry.value), style: AppText.amount.copyWith(fontSize: 14)),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
         ],
       ],
     );

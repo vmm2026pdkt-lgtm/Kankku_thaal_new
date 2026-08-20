@@ -62,29 +62,23 @@ class _EntryFormSheetState extends ConsumerState<_EntryFormSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.existing != null ? 'உள்ளீடு திருத்து' : 'புதிய உள்ளீடு',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.gold)),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: ChoiceChip(
-                  label: const Text('⬆ வருமானம்'),
-                  selected: type == 'income',
-                  onSelected: (_) => setState(() { type = 'income'; category = null; }),
-                  selectedColor: AppColors.income,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ChoiceChip(
-                  label: const Text('⬇ செலவு'),
-                  selected: type == 'expense',
-                  onSelected: (_) => setState(() { type = 'expense'; category = null; }),
-                  selectedColor: AppColors.expense,
-                ),
-              ),
-            ],
+          Center(
+            child: Container(
+              width: 40, height: 4, margin: const EdgeInsets.only(bottom: 14),
+              decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(4)),
+            ),
+          ),
+          Text(widget.existing != null ? 'உள்ளீடு திருத்து' : 'புதிய உள்ளீடு', style: AppText.h1),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(color: AppColors.surface2, borderRadius: BorderRadius.circular(16)),
+            child: Row(
+              children: [
+                Expanded(child: _typeToggle('⬆ வருமானம்', type == 'income', AppColors.income, () => setState(() { type = 'income'; category = null; }))),
+                Expanded(child: _typeToggle('⬇ செலவு', type == 'expense', AppColors.expense, () => setState(() { type = 'expense'; category = null; }))),
+              ],
+            ),
           ),
           const SizedBox(height: 14),
           ListTile(
@@ -137,6 +131,26 @@ class _EntryFormSheetState extends ConsumerState<_EntryFormSheet> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _typeToggle(String label, bool selected, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? color : Colors.transparent,
+          borderRadius: BorderRadius.circular(13),
+        ),
+        alignment: Alignment.center,
+        child: Text(label, style: TextStyle(
+          color: selected ? Colors.black : AppColors.text2,
+          fontWeight: FontWeight.w700, fontSize: 13.5,
+        )),
       ),
     );
   }
