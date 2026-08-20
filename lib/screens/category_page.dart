@@ -32,7 +32,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
     String fmt(double n) => '₹${NumberFormat('#,##0').format(n)}';
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 100),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 120),
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,6 +53,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
             height: 220,
             child: PieChart(
               PieChartData(
+                backgroundColor: Colors.transparent,
                 sectionsSpace: 2,
                 centerSpaceRadius: 60,
                 sections: List.generate(sortedEntries.length, (i) {

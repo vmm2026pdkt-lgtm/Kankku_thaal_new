@@ -46,7 +46,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
         child: KeyedSubtree(key: ValueKey(index), child: pages[index]),
       ),
-      floatingActionButton: index != 4 ? _buildFab() : null,
+      floatingActionButton: index != 4
+          ? Padding(padding: const EdgeInsets.only(bottom: 78), child: _buildFab())
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _GlassBottomNav(
         index: index,

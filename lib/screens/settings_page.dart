@@ -27,112 +27,190 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final sb = SupabaseService.instance;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 100),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 120),
       children: [
-        _sectionTitle('👤 சுயவிவரம்'),
-        TextField(controller: userNameCtrl, decoration: const InputDecoration(labelText: 'பெயர்'),
-          onSubmitted: (_) => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text)),
-        const SizedBox(height: 10),
-        TextField(controller: accountNameCtrl, decoration: const InputDecoration(labelText: 'கணக்கு பெயர்'),
-          onSubmitted: (_) => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text)),
-        const SizedBox(height: 6),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text),
-            child: const Text('சேமி'),
-          ),
+        _profileHeader(settings),
+        const SizedBox(height: 20),
+        _sectionCard(
+          icon: '👤', title: 'சுயவிவரம்',
+          child: Column(children: [
+            TextField(controller: userNameCtrl, decoration: const InputDecoration(labelText: 'பெயர்'),
+              onSubmitted: (_) => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text)),
+            const SizedBox(height: 10),
+            TextField(controller: accountNameCtrl, decoration: const InputDecoration(labelText: 'கணக்கு பெயர்'),
+              onSubmitted: (_) => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text)),
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text),
+                child: const Text('சேமி'),
+              ),
+            ),
+          ]),
         ),
 
-        _sectionTitle('☁️ Cloud Sync'),
-        if (!sb.isLoggedIn)
-          ListTile(
-            tileColor: AppColors.surface,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            leading: const Icon(Icons.cloud_off, color: AppColors.muted),
-            title: const Text('Login இல்லை'),
-            trailing: ElevatedButton(
-              onPressed: () async {
-                await Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-                await ref.read(cloudStatusProvider.notifier).refresh();
-                if (ref.read(cloudStatusProvider) == CloudStatus.approved) {
-                  await SyncService.instance.hydrateFromCloud();
-                  ref.read(entriesProvider.notifier).load();
-                  ref.read(categoriesProvider.notifier).load();
-                  ref.read(settingsProvider.notifier).load();
-                  ref.read(budgetsProvider.notifier).load();
-                  ref.read(recurringProvider.notifier).load();
-                }
-              },
-              child: const Text('Login'),
-            ),
-          )
-        else
-          ListTile(
-            tileColor: AppColors.surface,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            leading: Icon(
-              cloudStatus == CloudStatus.approved ? Icons.cloud_done : Icons.cloud_queue,
-              color: cloudStatus == CloudStatus.approved ? AppColors.income : AppColors.gold,
-            ),
-            title: Text(sb.currentUser?.email ?? ''),
-            subtitle: Text(_statusLabel(cloudStatus)),
-            trailing: TextButton(
-              onPressed: () async {
-                await sb.signOut();
-                ref.read(cloudStatusProvider.notifier).refresh();
-              },
-              child: const Text('Logout', style: TextStyle(color: AppColors.expense)),
-            ),
+        _sectionCard(
+          icon: '☁️', title: 'Cloud Sync',
+          child: !sb.isLoggedIn
+              ? _flatTile(
+                  icon: Icons.cloud_off, iconColor: AppColors.muted, title: 'Login இல்லை',
+                  trailing: ElevatedButton(
+                    onPressed: () async {
+                      await Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+                      await ref.read(cloudStatusProvider.notifier).refresh();
+                      if (ref.read(cloudStatusProvider) == CloudStatus.approved) {
+                        await SyncService.instance.hydrateFromCloud();
+                        ref.read(entriesProvider.notifier).load();
+                        ref.read(categoriesProvider.notifier).load();
+                        ref.read(settingsProvider.notifier).load();
+                        ref.read(budgetsProvider.notifier).load();
+                        ref.read(recurringProvider.notifier).load();
+                      }
+                    },
+                    child: const Text('Login'),
+                  ),
+                )
+              : _flatTile(
+                  icon: cloudStatus == CloudStatus.approved ? Icons.cloud_done : Icons.cloud_queue,
+                  iconColor: cloudStatus == CloudStatus.approved ? AppColors.income : AppColors.gold,
+                  title: sb.currentUser?.email ?? '',
+                  subtitle: _statusLabel(cloudStatus),
+                  trailing: TextButton(
+                    onPressed: () async {
+                      await sb.signOut();
+                      ref.read(cloudStatusProvider.notifier).refresh();
+                    },
+                    child: const Text('Logout', style: TextStyle(color: AppColors.expense)),
+                  ),
+                ),
+        ),
+
+        _sectionCard(icon: '💰', title: 'மாத பட்ஜெட்', child: _BudgetTile()),
+        _sectionCard(icon: '🔁', title: 'தானியங்கி பரிவர்த்தனைகள்', child: _RecurringTile()),
+        _sectionCard(icon: '🏷️', title: 'வகைகள் நிர்வகி', child: _CategoryManageTile()),
+        _sectionCard(icon: '🔐', title: 'PIN Lock', child: _PinTile()),
+
+        _sectionCard(
+          icon: '📤', title: 'Export & Backup',
+          child: Wrap(spacing: 10, runSpacing: 10, children: [
+            _actionChip('📄 PDF', () async {
+              final entries = ref.read(entriesProvider);
+              final cats = {for (var c in ref.read(categoriesProvider)) c.id: c};
+              await ExportService.exportPdf(entries, cats, settings.userName, settings.accountName);
+            }),
+            _actionChip('📊 Excel', () async {
+              final entries = ref.read(entriesProvider);
+              final cats = {for (var c in ref.read(categoriesProvider)) c.id: c};
+              await ExportService.exportExcel(entries, cats);
+            }),
+            _actionChip('💾 Backup JSON', () async {
+              final payload = await SyncService.instance.buildPayload();
+              await ExportService.backupJson(payload);
+            }),
+          ]),
+        ),
+
+        _sectionCard(
+          icon: '⚠️', title: 'Danger Zone', accent: AppColors.expense,
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(foregroundColor: AppColors.expense, side: const BorderSide(color: AppColors.expense)),
+            onPressed: () async {
+              final ok = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+                backgroundColor: AppColors.surface,
+                title: const Text('⚠️ எல்லா data-வையும் நீக்க வேண்டுமா?'),
+                content: const Text('திரும்ப பெற முடியாது!'),
+                actions: [
+                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('ரத்து')),
+                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('நீக்கு', style: TextStyle(color: AppColors.expense))),
+                ],
+              ));
+              if (ok == true) await ref.read(entriesProvider.notifier).clearAll();
+            },
+            child: const Text('எல்லா Data நீக்கு'),
           ),
+        ),
+      ],
+    );
+  }
 
-        _sectionTitle('💰 மாத பட்ஜெட்'),
-        _BudgetTile(),
-
-        _sectionTitle('🔁 தானியங்கி பரிவர்த்தனைகள்'),
-        _RecurringTile(),
-
-        _sectionTitle('🏷️ வகைகள் நிர்வகி'),
-        _CategoryManageTile(),
-
-        _sectionTitle('🔐 PIN Lock'),
-        _PinTile(),
-
-        _sectionTitle('📤 Export & Backup'),
-        Wrap(spacing: 10, runSpacing: 10, children: [
-          _actionChip('📄 PDF', () async {
-            final entries = ref.read(entriesProvider);
-            final cats = {for (var c in ref.read(categoriesProvider)) c.id: c};
-            await ExportService.exportPdf(entries, cats, settings.userName, settings.accountName);
-          }),
-          _actionChip('📊 Excel', () async {
-            final entries = ref.read(entriesProvider);
-            final cats = {for (var c in ref.read(categoriesProvider)) c.id: c};
-            await ExportService.exportExcel(entries, cats);
-          }),
-          _actionChip('💾 Backup JSON', () async {
-            final payload = await SyncService.instance.buildPayload();
-            await ExportService.backupJson(payload);
-          }),
-        ]),
-
-        _sectionTitle('⚠️ Danger Zone'),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(foregroundColor: AppColors.expense),
-          onPressed: () async {
-            final ok = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-              backgroundColor: AppColors.surface,
-              title: const Text('⚠️ எல்லா data-வையும் நீக்க வேண்டுமா?'),
-              content: const Text('திரும்ப பெற முடியாது!'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('ரத்து')),
-                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('நீக்கு', style: TextStyle(color: AppColors.expense))),
+  Widget _profileHeader(AppSettings settings) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: AppColors.heroGradient,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [BoxShadow(color: AppColors.violetDeep.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56, height: 56,
+            decoration: BoxDecoration(
+              gradient: AppColors.goldGradient, shape: BoxShape.circle,
+              boxShadow: [BoxShadow(color: AppColors.gold.withOpacity(0.35), blurRadius: 14)],
+            ),
+            child: const Center(child: Text('🪙', style: TextStyle(fontSize: 26))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(settings.userName.isEmpty ? 'கணக்கு தாள்' : settings.userName,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
+                const SizedBox(height: 2),
+                Text(settings.accountName.isEmpty ? 'உங்கள் கணக்கு' : settings.accountName,
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13)),
               ],
-            ));
-            if (ok == true) await ref.read(entriesProvider.notifier).clearAll();
-          },
-          child: const Text('எல்லா Data நீக்கு'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionCard({required String icon, required String title, required Widget child, Color? accent}) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: glassCard(radius: 20, borderColor: accent != null ? accent.withOpacity(0.4) : null),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(children: [
+              Text(icon, style: const TextStyle(fontSize: 16)),
+              const SizedBox(width: 8),
+              Text(title, style: AppText.label.copyWith(color: accent ?? AppColors.text2)),
+            ]),
+            const SizedBox(height: 12),
+            child,
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _flatTile({required IconData icon, required Color iconColor, required String title, String? subtitle, required Widget trailing}) {
+    return Row(
+      children: [
+        Container(
+          width: 42, height: 42,
+          decoration: BoxDecoration(color: iconColor.withOpacity(0.14), borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, color: iconColor, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: AppText.body.copyWith(fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+              if (subtitle != null) Text(subtitle, style: AppText.caption),
+            ],
+          ),
+        ),
+        trailing,
       ],
     );
   }
@@ -146,11 +224,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  Widget _sectionTitle(String t) => Padding(
-    padding: const EdgeInsets.fromLTRB(2, 20, 2, 8),
-    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.text2, fontSize: 13)),
-  );
-
   Widget _actionChip(String label, VoidCallback onTap) => ActionChip(label: Text(label), onPressed: onTap);
 }
 
@@ -159,7 +232,8 @@ class _BudgetTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final budgets = ref.watch(budgetsProvider);
     return ListTile(
-      tileColor: AppColors.surface,
+      tileColor: AppColors.surface2,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       title: Text('மொத்த பட்ஜெட்: ₹${budgets.overall.toStringAsFixed(0)}'),
       trailing: const Icon(Icons.edit, size: 18),
@@ -189,7 +263,8 @@ class _RecurringTile extends ConsumerWidget {
     return Column(
       children: [
         ...rules.map((r) => ListTile(
-          tileColor: AppColors.surface,
+          tileColor: AppColors.surface2,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           title: Text(r.desc),
           subtitle: Text('₹${r.amount.toStringAsFixed(0)} • ${r.frequency == 'monthly' ? 'மாதம்தோறும்' : 'வாரம்தோறும்'}'),
@@ -249,7 +324,8 @@ class _CategoryManageTile extends ConsumerWidget {
     return Column(
       children: [
         ...customCats.map((c) => ListTile(
-          tileColor: AppColors.surface,
+          tileColor: AppColors.surface2,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           leading: Text(c.icon),
           title: Text(c.name),
@@ -309,7 +385,8 @@ class _PinTileState extends State<_PinTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      tileColor: AppColors.surface,
+      tileColor: AppColors.surface2,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       title: Text(hasPin == true ? '🔐 PIN அமைக்கப்பட்டுள்ளது' : 'PIN இல்லை'),
       trailing: hasPin == true

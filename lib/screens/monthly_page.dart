@@ -31,7 +31,7 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
     final maxVal = [...monthlyIncome, ...monthlyExpense].fold(0.0, (m, v) => v > m ? v : m);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 100),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 120),
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,29 +46,37 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
           height: 260,
           child: maxVal == 0
               ? const Center(child: Text('இந்த வருடம் தரவு இல்லை', style: TextStyle(color: AppColors.muted)))
-              : BarChart(
-                  BarChartData(
-                    maxY: maxVal * 1.15,
-                    barGroups: List.generate(12, (i) => BarChartGroupData(
-                      x: i,
-                      barRods: [
-                        BarChartRodData(toY: monthlyIncome[i], color: AppColors.income, width: 6),
-                        BarChartRodData(toY: monthlyExpense[i], color: AppColors.expense, width: 6),
-                      ],
-                    )),
-                    titlesData: FlTitlesData(
-                      bottomTitles: AxisTitles(sideTitles: SideTitles(
-                        showTitles: true, getTitlesWidget: (v, _) => Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: Text(monthNamesTa[v.toInt()].substring(0, 3), style: const TextStyle(fontSize: 9, color: AppColors.muted)),
-                        ),
+              : Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(4, 16, 12, 4),
+                  child: BarChart(
+                    BarChartData(
+                      backgroundColor: Colors.transparent,
+                      maxY: maxVal * 1.15,
+                      barGroups: List.generate(12, (i) => BarChartGroupData(
+                        x: i,
+                        barRods: [
+                          BarChartRodData(toY: monthlyIncome[i], color: AppColors.income, width: 6, borderRadius: BorderRadius.circular(3)),
+                          BarChartRodData(toY: monthlyExpense[i], color: AppColors.expense, width: 6, borderRadius: BorderRadius.circular(3)),
+                        ],
                       )),
-                      leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(sideTitles: SideTitles(
+                          showTitles: true, getTitlesWidget: (v, _) => Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(monthNamesTa[v.toInt()].substring(0, 3), style: const TextStyle(fontSize: 9, color: AppColors.muted)),
+                          ),
+                        )),
+                        leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      gridData: const FlGridData(show: false),
+                      borderData: FlBorderData(show: false),
                     ),
-                    gridData: const FlGridData(show: false),
-                    borderData: FlBorderData(show: false),
                   ),
                 ),
         ),

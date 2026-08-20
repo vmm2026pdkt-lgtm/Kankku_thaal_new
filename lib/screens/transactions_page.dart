@@ -55,7 +55,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
           child: filtered.isEmpty
               ? const Center(child: Text('உள்ளீடுகள் இல்லை', style: TextStyle(color: AppColors.muted)))
               : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 100),
+                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 120),
                   itemCount: filtered.length,
                   itemBuilder: (context, i) {
                     final e = filtered[i];

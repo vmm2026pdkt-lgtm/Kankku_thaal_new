@@ -27,7 +27,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final catsById = {for (var c in ref.watch(categoriesProvider)) c.id: c};
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: 100),
+      padding: const EdgeInsets.only(bottom: 120),
       children: [
         _HeroWalletCard(
           month: month,
