@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
@@ -46,49 +45,25 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 260,
-          child: maxVal == 0
-              ? Center(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    const Text('📈', style: TextStyle(fontSize: 44)),
-                    const SizedBox(height: 10),
-                    Text('இந்த வருடம் தரவு இல்லை', style: AppText.body.copyWith(color: AppColors.text2)),
-                  ]),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  padding: const EdgeInsets.fromLTRB(4, 16, 12, 4),
-                  child: BarChart(
-                    BarChartData(
-                      maxY: maxVal * 1.15,
-                      barGroups: List.generate(12, (i) => BarChartGroupData(
-                        x: i,
-                        barRods: [
-                          BarChartRodData(toY: monthlyIncome[i], color: AppColors.income, width: 6, borderRadius: BorderRadius.circular(3)),
-                          BarChartRodData(toY: monthlyExpense[i], color: AppColors.expense, width: 6, borderRadius: BorderRadius.circular(3)),
-                        ],
-                      )),
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(sideTitles: SideTitles(
-                          showTitles: true, getTitlesWidget: (v, _) => Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: Text(monthNamesTa[v.toInt()].substring(0, 3), style: const TextStyle(fontSize: 9, color: AppColors.muted)),
-                          ),
-                        )),
-                        leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      ),
-                      gridData: const FlGridData(show: false),
-                      borderData: FlBorderData(show: false),
-                    ),
-                  ),
-                ),
-        ),
+        if (maxVal == 0)
+          Container(
+            height: 220,
+            alignment: Alignment.center,
+            decoration: glassCard(radius: 18),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Text('📈', style: TextStyle(fontSize: 44)),
+              const SizedBox(height: 10),
+              Text('இந்த வருடம் தரவு இல்லை', style: AppText.body.copyWith(color: AppColors.text2)),
+            ]),
+          )
+        else
+          Container(
+            padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+            decoration: glassCard(radius: 18),
+            child: _CustomBarChart(
+              income: monthlyIncome, expense: monthlyExpense, maxVal: maxVal,
+            ),
+          ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -130,4 +105,67 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
       const SizedBox(width: 6), Text(label, style: const TextStyle(fontSize: 12)),
     ],
   );
+}
+
+/// Hand-built bar chart using plain Flutter widgets (no charting package).
+/// Avoids fl_chart's opaque default plot-area background that didn't
+/// respect the app's dark theme. Uses the exact same monthlyIncome/
+/// monthlyExpense arrays already computed above — no calculation change.
+class _CustomBarChart extends StatelessWidget {
+  final List<double> income, expense;
+  final double maxVal;
+  const _CustomBarChart({required this.income, required this.expense, required this.maxVal});
+
+  static const _chartHeight = 190.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _chartHeight + 26,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: List.generate(12, (i) {
+          final incH = maxVal == 0 ? 0.0 : (income[i] / maxVal) * _chartHeight;
+          final expH = maxVal == 0 ? 0.0 : (expense[i] / maxVal) * _chartHeight;
+          return Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  height: _chartHeight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _bar(incH, AppColors.income),
+                      const SizedBox(width: 3),
+                      _bar(expH, AppColors.expense),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(monthNamesTa[i].substring(0, 3), style: const TextStyle(fontSize: 9, color: AppColors.muted)),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _bar(double height, Color color) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: height),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+      builder: (context, v, _) => Container(
+        width: 7,
+        height: v.clamp(v == 0 ? 0 : 3, double.infinity),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
+        ),
+      ),
+    );
+  }
 }
