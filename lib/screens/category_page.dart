@@ -53,7 +53,6 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
             height: 220,
             child: PieChart(
               PieChartData(
-                backgroundColor: Colors.transparent,
                 sectionsSpace: 2,
                 centerSpaceRadius: 60,
                 sections: List.generate(sortedEntries.length, (i) {

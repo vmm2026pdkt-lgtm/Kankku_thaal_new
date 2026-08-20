@@ -54,7 +54,6 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
                   padding: const EdgeInsets.fromLTRB(4, 16, 12, 4),
                   child: BarChart(
                     BarChartData(
-                      backgroundColor: Colors.transparent,
                       maxY: maxVal * 1.15,
                       barGroups: List.generate(12, (i) => BarChartGroupData(
                         x: i,
