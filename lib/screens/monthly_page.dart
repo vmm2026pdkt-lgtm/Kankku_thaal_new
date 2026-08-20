@@ -57,11 +57,20 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
             ]),
           )
         else
+          // DIAGNOSTIC: solid gold block instead of the chart, temporarily,
+          // to isolate whether this is a rendering issue in our chart widget
+          // or something at the device/OS rendering layer.
           Container(
-            padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
-            decoration: glassCard(radius: 18),
-            child: _CustomBarChart(
-              income: monthlyIncome, expense: monthlyExpense, maxVal: maxVal,
+            height: 220,
+            decoration: BoxDecoration(
+              color: AppColors.gold,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            alignment: Alignment.center,
+            child: const Text(
+              'DIAGNOSTIC TEST — இது தங்க நிறத்தில் தெரிந்தால் சரி',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
           ),
         const SizedBox(height: 16),
@@ -154,17 +163,15 @@ class _CustomBarChart extends StatelessWidget {
   }
 
   Widget _bar(double height, Color color) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: height),
+    final h = height <= 0 ? 2.0 : height;
+    return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOutCubic,
-      builder: (context, v, _) => Container(
-        width: 7,
-        height: v.clamp(v == 0 ? 0 : 3, double.infinity),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
-        ),
+      width: 7,
+      height: h,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
       ),
     );
   }
