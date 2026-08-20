@@ -50,9 +50,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           ? Padding(padding: const EdgeInsets.only(bottom: 78), child: _buildFab())
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: _GlassBottomNav(
-        index: index,
-        onTap: (i) => setState(() { index = i; fabOpen = false; }),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: _GlassBottomNav(
+          index: index,
+          onTap: (i) => setState(() { index = i; fabOpen = false; }),
+        ),
       ),
     );
   }
