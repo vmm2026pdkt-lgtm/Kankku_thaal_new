@@ -39,6 +39,18 @@ class _HomePageState extends ConsumerState<HomePage> {
           onNext: () => setState(() => month = DateTime(month.year, month.month + 1)),
         ),
         Padding(
+          padding: const EdgeInsets.fromLTRB(14, 16, 14, 0),
+          child: Row(
+            children: [
+              Expanded(child: _quickAction('➕', 'வரவு', AppColors.income,
+                  () => showEntryFormSheet(context, ref, defaultType: 'income'))),
+              const SizedBox(width: 10),
+              Expanded(child: _quickAction('➖', 'செலவு', AppColors.expense,
+                  () => showEntryFormSheet(context, ref, defaultType: 'expense'))),
+            ],
+          ),
+        ),
+        Padding(
           padding: const EdgeInsets.fromLTRB(18, 24, 18, 10),
           child: Row(
             children: [
@@ -74,6 +86,31 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           }),
       ],
+    );
+  }
+
+  Widget _quickAction(String icon, String label, Color color, VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: glassCard(radius: 18, borderColor: color.withOpacity(0.35)),
+          child: Column(
+            children: [
+              Container(
+                width: 34, height: 34,
+                decoration: BoxDecoration(color: color.withOpacity(0.16), shape: BoxShape.circle),
+                child: Center(child: Text(icon, style: TextStyle(fontSize: 15, color: color))),
+              ),
+              const SizedBox(height: 8),
+              Text(label, style: AppText.body.copyWith(fontWeight: FontWeight.w700, fontSize: 13)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -34,47 +34,67 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 120),
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(icon: const Icon(Icons.chevron_left), onPressed: () => setState(() => month = DateTime(month.year, month.month - 1))),
-            Text(DateFormat('MMMM yyyy').format(month), style: const TextStyle(fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.chevron_right), onPressed: () => setState(() => month = DateTime(month.year, month.month + 1))),
-          ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          decoration: glassCard(radius: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(icon: const Icon(Icons.chevron_left, color: AppColors.text2), onPressed: () => setState(() => month = DateTime(month.year, month.month - 1))),
+              Text(DateFormat('MMMM yyyy').format(month), style: AppText.h2),
+              IconButton(icon: const Icon(Icons.chevron_right, color: AppColors.text2), onPressed: () => setState(() => month = DateTime(month.year, month.month + 1))),
+            ],
+          ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 14),
         if (total == 0)
-          const Padding(
-            padding: EdgeInsets.all(40),
-            child: Center(child: Text('இந்த மாதம் செலவு இல்லை', style: TextStyle(color: AppColors.muted))),
+          Padding(
+            padding: const EdgeInsets.all(40),
+            child: Column(children: [
+              const Text('📊', style: TextStyle(fontSize: 44)),
+              const SizedBox(height: 10),
+              Text('இந்த மாதம் செலவு இல்லை', style: AppText.body.copyWith(color: AppColors.text2)),
+            ]),
           )
         else ...[
           SizedBox(
             height: 220,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 60,
-                sections: List.generate(sortedEntries.length, (i) {
-                  final entry = sortedEntries[i];
-                  final color = Color(DefaultCategories.catColors[i % DefaultCategories.catColors.length]);
-                  final pct = (entry.value / total * 100);
-                  return PieChartSectionData(
-                    value: entry.value, color: color,
-                    title: pct >= 5 ? '${pct.toStringAsFixed(0)}%' : '',
-                    radius: 50,
-                    titleStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
-                  );
-                }),
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PieChart(
+                  PieChartData(
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 64,
+                    sections: List.generate(sortedEntries.length, (i) {
+                      final entry = sortedEntries[i];
+                      final color = Color(DefaultCategories.catColors[i % DefaultCategories.catColors.length]);
+                      final pct = (entry.value / total * 100);
+                      return PieChartSectionData(
+                        value: entry.value, color: color,
+                        title: pct >= 5 ? '${pct.toStringAsFixed(0)}%' : '',
+                        radius: 50,
+                        titleStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                      );
+                    }),
+                  ),
+                ),
+                // Center label — pure UI addition, uses the same `total`
+                // value already computed above (no calculation change).
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(fmt(total), style: AppText.amount.copyWith(fontSize: 20)),
+                    const SizedBox(height: 2),
+                    Text('மொத்த செலவு', style: AppText.caption),
+                  ],
+                ),
+              ],
             ),
           ),
-          Center(
-            child: Text('மொத்த செலவு: ${fmt(total)}', style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.w800, fontSize: 17)),
-          ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: glassCard(radius: 18),
             child: Column(
               children: List.generate(sortedEntries.length, (i) {
@@ -85,16 +105,29 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
                 final color = Color(DefaultCategories.catColors[i % DefaultCategories.catColors.length]);
                 final pct = (entry.value / total * 100);
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 9),
-                  child: Row(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-                      const SizedBox(width: 10),
-                      Text(catIcon), const SizedBox(width: 6),
-                      Expanded(child: Text(catName, style: AppText.body)),
-                      Text('${pct.toStringAsFixed(1)}%', style: AppText.caption),
-                      const SizedBox(width: 10),
-                      Text(fmt(entry.value), style: AppText.amount.copyWith(fontSize: 14)),
+                      Row(
+                        children: [
+                          Text(catIcon, style: const TextStyle(fontSize: 15)), const SizedBox(width: 8),
+                          Expanded(child: Text(catName, style: AppText.body.copyWith(fontWeight: FontWeight.w600))),
+                          Text('${pct.toStringAsFixed(1)}%', style: AppText.caption),
+                          const SizedBox(width: 10),
+                          Text(fmt(entry.value), style: AppText.amount.copyWith(fontSize: 14)),
+                        ],
+                      ),
+                      const SizedBox(height: 7),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          value: (pct / 100).clamp(0.0, 1.0),
+                          minHeight: 6,
+                          backgroundColor: AppColors.surface2,
+                          valueColor: AlwaysStoppedAnimation(color),
+                        ),
+                      ),
                     ],
                   ),
                 );

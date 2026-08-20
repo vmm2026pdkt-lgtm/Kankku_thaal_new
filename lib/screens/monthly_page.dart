@@ -33,19 +33,29 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 120),
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(icon: const Icon(Icons.chevron_left), onPressed: () => setState(() => year--)),
-            Text('$year', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            IconButton(icon: const Icon(Icons.chevron_right), onPressed: () => setState(() => year++)),
-          ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          decoration: glassCard(radius: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(icon: const Icon(Icons.chevron_left, color: AppColors.text2), onPressed: () => setState(() => year--)),
+              Text('$year', style: AppText.h2),
+              IconButton(icon: const Icon(Icons.chevron_right, color: AppColors.text2), onPressed: () => setState(() => year++)),
+            ],
+          ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 16),
         SizedBox(
           height: 260,
           child: maxVal == 0
-              ? const Center(child: Text('இந்த வருடம் தரவு இல்லை', style: TextStyle(color: AppColors.muted)))
+              ? Center(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    const Text('📈', style: TextStyle(fontSize: 44)),
+                    const SizedBox(height: 10),
+                    Text('இந்த வருடம் தரவு இல்லை', style: AppText.body.copyWith(color: AppColors.text2)),
+                  ]),
+                )
               : Container(
                   decoration: BoxDecoration(
                     color: AppColors.surface.withOpacity(0.4),
@@ -89,21 +99,27 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
           ],
         ),
         const SizedBox(height: 20),
-        ...List.generate(12, (i) {
-          final inc = monthlyIncome[i]; final exp = monthlyExpense[i];
-          if (inc == 0 && exp == 0) return const SizedBox.shrink();
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Row(
-              children: [
-                Expanded(child: Text(monthNamesTa[i])),
-                Text(fmt(inc), style: const TextStyle(color: AppColors.income)),
-                const SizedBox(width: 10),
-                Text(fmt(exp), style: const TextStyle(color: AppColors.expense)),
-              ],
-            ),
-          );
-        }),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: glassCard(radius: 18),
+          child: Column(
+            children: List.generate(12, (i) {
+              final inc = monthlyIncome[i]; final exp = monthlyExpense[i];
+              if (inc == 0 && exp == 0) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 9),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(monthNamesTa[i], style: AppText.body.copyWith(fontWeight: FontWeight.w600))),
+                    Text(fmt(inc), style: const TextStyle(color: AppColors.income, fontWeight: FontWeight.w700, fontSize: 13)),
+                    const SizedBox(width: 12),
+                    Text(fmt(exp), style: const TextStyle(color: AppColors.expense, fontWeight: FontWeight.w700, fontSize: 13)),
+                  ],
+                ),
+              );
+            }),
+          ),
+        ),
       ],
     );
   }

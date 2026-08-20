@@ -32,7 +32,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _profileHeader(settings),
         const SizedBox(height: 20),
         _sectionCard(
-          icon: '👤', title: 'சுயவிவரம்',
+          icon: '👤', title: 'கணக்கு',
           child: Column(children: [
             TextField(controller: userNameCtrl, decoration: const InputDecoration(labelText: 'பெயர்'),
               onSubmitted: (_) => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text)),
@@ -88,8 +88,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
         _sectionCard(icon: '💰', title: 'மாத பட்ஜெட்', child: _BudgetTile()),
         _sectionCard(icon: '🔁', title: 'தானியங்கி பரிவர்த்தனைகள்', child: _RecurringTile()),
-        _sectionCard(icon: '🏷️', title: 'வகைகள் நிர்வகி', child: _CategoryManageTile()),
-        _sectionCard(icon: '🔐', title: 'PIN Lock', child: _PinTile()),
+        _sectionCard(icon: '🏷️', title: 'வகைகள்', child: _CategoryManageTile()),
+        _sectionCard(icon: '🔐', title: 'பாதுகாப்பு', child: _PinTile()),
 
         _sectionCard(
           icon: '📤', title: 'Export & Backup',
