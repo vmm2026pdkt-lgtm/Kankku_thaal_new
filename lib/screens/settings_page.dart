@@ -33,7 +33,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         const SizedBox(height: 20),
         _sectionCard(
           icon: '👤', title: 'கணக்கு',
-          child: Column(children: [
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
             TextField(controller: userNameCtrl, decoration: const InputDecoration(labelText: 'பெயர்'),
               onSubmitted: (_) => ref.read(settingsProvider.notifier).save(userNameCtrl.text, accountNameCtrl.text)),
             const SizedBox(height: 10),
@@ -155,6 +155,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           const SizedBox(width: 14),
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(settings.userName.isEmpty ? 'கணக்கு தாள்' : settings.userName,
@@ -177,6 +178,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         padding: const EdgeInsets.all(16),
         decoration: glassCard(radius: 20, borderColor: accent != null ? accent.withOpacity(0.4) : null),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(children: [
@@ -203,6 +205,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         const SizedBox(width: 12),
         Expanded(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: AppText.body.copyWith(fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -261,6 +264,7 @@ class _RecurringTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final rules = ref.watch(recurringProvider);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         ...rules.map((r) => ListTile(
           tileColor: AppColors.surface2,
@@ -322,6 +326,7 @@ class _CategoryManageTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final customCats = ref.watch(categoriesProvider).where((c) => c.custom).toList();
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         ...customCats.map((c) => ListTile(
           tileColor: AppColors.surface2,

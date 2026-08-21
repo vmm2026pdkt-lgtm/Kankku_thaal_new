@@ -72,6 +72,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                     final dateKey = dateKeys[gi];
                     final dayEntries = grouped[dateKey]!;
                     return Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
@@ -188,6 +189,7 @@ class _TxTile extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(entry.desc, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.body.copyWith(fontWeight: FontWeight.w600)),

@@ -50,7 +50,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
         if (total == 0)
           Padding(
             padding: const EdgeInsets.all(40),
-            child: Column(children: [
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Text('📊', style: TextStyle(fontSize: 44)),
               const SizedBox(height: 10),
               Text('இந்த மாதம் செலவு இல்லை', style: AppText.body.copyWith(color: AppColors.text2)),
@@ -97,6 +97,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: glassCard(radius: 18),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: List.generate(sortedEntries.length, (i) {
                 final entry = sortedEntries[i];
                 final cat = expCats.where((c) => c.id == entry.key).toList();
@@ -107,6 +108,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(

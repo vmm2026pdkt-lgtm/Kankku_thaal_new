@@ -99,6 +99,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: glassCard(radius: 18, borderColor: color.withOpacity(0.35)),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 width: 34, height: 34,
@@ -145,6 +146,7 @@ class _HeroWalletCard extends StatelessWidget {
           Positioned(top: -30, right: -20, child: _glowCircle(90, AppColors.gold.withOpacity(0.16))),
           Positioned(bottom: -40, left: -30, child: _glowCircle(120, AppColors.violet.withOpacity(0.18))),
           Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -221,6 +223,7 @@ class _HeroWalletCard extends StatelessWidget {
           border: Border.all(color: Colors.white.withOpacity(0.12)),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
@@ -276,6 +279,7 @@ class _EntryTile extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.body.copyWith(fontWeight: FontWeight.w600)),
@@ -304,6 +308,7 @@ class _EmptyState extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 30, 24, 10),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Text('🧾', style: TextStyle(fontSize: 44)),
           const SizedBox(height: 10),

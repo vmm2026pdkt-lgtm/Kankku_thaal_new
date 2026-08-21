@@ -57,20 +57,11 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
             ]),
           )
         else
-          // DIAGNOSTIC: solid gold block instead of the chart, temporarily,
-          // to isolate whether this is a rendering issue in our chart widget
-          // or something at the device/OS rendering layer.
           Container(
-            height: 220,
-            decoration: BoxDecoration(
-              color: AppColors.gold,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            alignment: Alignment.center,
-            child: const Text(
-              'DIAGNOSTIC TEST — இது தங்க நிறத்தில் தெரிந்தால் சரி',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+            decoration: glassCard(radius: 18),
+            child: _CustomBarChart(
+              income: monthlyIncome, expense: monthlyExpense, maxVal: maxVal,
             ),
           ),
         const SizedBox(height: 16),
@@ -87,6 +78,7 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: glassCard(radius: 18),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: List.generate(12, (i) {
               final inc = monthlyIncome[i]; final exp = monthlyExpense[i];
               if (inc == 0 && exp == 0) return const SizedBox.shrink();
