@@ -108,63 +108,70 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
   );
 }
 
-/// Hand-built bar chart using plain Flutter widgets (no charting package).
-/// Avoids fl_chart's opaque default plot-area background that didn't
-/// respect the app's dark theme. Uses the exact same monthlyIncome/
-/// monthlyExpense arrays already computed above — no calculation change.
+/// Hand-built bar chart using a single CustomPainter (one canvas draw call,
+/// no nested Row/Column/Container layers) — avoids any possible
+/// compositing/layout edge case from a deeply nested widget tree.
+/// Uses the exact same monthlyIncome/monthlyExpense arrays already
+/// computed above — no calculation change.
 class _CustomBarChart extends StatelessWidget {
   final List<double> income, expense;
   final double maxVal;
   const _CustomBarChart({required this.income, required this.expense, required this.maxVal});
 
-  static const _chartHeight = 190.0;
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: _chartHeight + 26,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: List.generate(12, (i) {
-          final incH = maxVal == 0 ? 0.0 : (income[i] / maxVal) * _chartHeight;
-          final expH = maxVal == 0 ? 0.0 : (expense[i] / maxVal) * _chartHeight;
-          return Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  height: _chartHeight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _bar(incH, AppColors.income),
-                      const SizedBox(width: 3),
-                      _bar(expH, AppColors.expense),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(monthNamesTa[i].substring(0, 3), style: const TextStyle(fontSize: 9, color: AppColors.muted)),
-              ],
-            ),
-          );
-        }),
+      height: 216,
+      width: double.infinity,
+      child: CustomPaint(
+        painter: _BarChartPainter(income: income, expense: expense, maxVal: maxVal),
       ),
     );
+  }
+}
+
+class _BarChartPainter extends CustomPainter {
+  final List<double> income, expense;
+  final double maxVal;
+  _BarChartPainter({required this.income, required this.expense, required this.maxVal});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const chartHeight = 190.0;
+    final slotWidth = size.width / 12;
+    final incomePaint = Paint()..color = AppColors.income;
+    final expensePaint = Paint()..color = AppColors.expense;
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    for (int i = 0; i < 12; i++) {
+      final slotCenter = slotWidth * i + slotWidth / 2;
+      final safeMax = maxVal <= 0 ? 1.0 : maxVal;
+      final incH = ((income[i] / safeMax) * chartHeight).clamp(0.0, chartHeight);
+      final expH = ((expense[i] / safeMax) * chartHeight).clamp(0.0, chartHeight);
+      final barW = (slotWidth * 0.22).clamp(4.0, 10.0);
+
+      final incRect = RRect.fromRectAndCorners(
+        Rect.fromLTWH(slotCenter - barW - 2, chartHeight - incH, barW, incH == 0 ? 2 : incH),
+        topLeft: const Radius.circular(3), topRight: const Radius.circular(3),
+      );
+      canvas.drawRRect(incRect, incomePaint);
+
+      final expRect = RRect.fromRectAndCorners(
+        Rect.fromLTWH(slotCenter + 2, chartHeight - expH, barW, expH == 0 ? 2 : expH),
+        topLeft: const Radius.circular(3), topRight: const Radius.circular(3),
+      );
+      canvas.drawRRect(expRect, expensePaint);
+
+      textPainter.text = TextSpan(
+        text: monthNamesTa[i].substring(0, monthNamesTa[i].length < 3 ? monthNamesTa[i].length : 3),
+        style: const TextStyle(fontSize: 9, color: AppColors.muted),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, Offset(slotCenter - textPainter.width / 2, chartHeight + 8));
+    }
   }
 
-  Widget _bar(double height, Color color) {
-    final h = height <= 0 ? 2.0 : height;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeOutCubic,
-      width: 7,
-      height: h,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
-      ),
-    );
-  }
+  @override
+  bool shouldRepaint(covariant _BarChartPainter oldDelegate) =>
+      oldDelegate.income != income || oldDelegate.expense != expense || oldDelegate.maxVal != maxVal;
 }
