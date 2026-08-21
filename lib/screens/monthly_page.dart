@@ -120,12 +120,27 @@ class _CustomBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 216,
-      width: double.infinity,
-      child: CustomPaint(
-        painter: _BarChartPainter(income: income, expense: expense, maxVal: maxVal),
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 190,
+          width: double.infinity,
+          child: CustomPaint(
+            painter: _BarChartPainter(income: income, expense: expense, maxVal: maxVal),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: List.generate(12, (i) {
+            final name = monthNamesTa[i];
+            final label = name.length < 3 ? name : name.substring(0, 3);
+            return Expanded(
+              child: Center(child: Text(label, style: const TextStyle(fontSize: 9, color: AppColors.muted))),
+            );
+          }),
+        ),
+      ],
     );
   }
 }
@@ -137,11 +152,10 @@ class _BarChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const chartHeight = 190.0;
+    final chartHeight = size.height;
     final slotWidth = size.width / 12;
     final incomePaint = Paint()..color = AppColors.income;
     final expensePaint = Paint()..color = AppColors.expense;
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     for (int i = 0; i < 12; i++) {
       final slotCenter = slotWidth * i + slotWidth / 2;
@@ -161,13 +175,6 @@ class _BarChartPainter extends CustomPainter {
         topLeft: const Radius.circular(3), topRight: const Radius.circular(3),
       );
       canvas.drawRRect(expRect, expensePaint);
-
-      textPainter.text = TextSpan(
-        text: monthNamesTa[i].substring(0, monthNamesTa[i].length < 3 ? monthNamesTa[i].length : 3),
-        style: const TextStyle(fontSize: 9, color: AppColors.muted),
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(slotCenter - textPainter.width / 2, chartHeight + 8));
     }
   }
 
