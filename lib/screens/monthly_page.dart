@@ -136,7 +136,15 @@ class _CustomBarChart extends StatelessWidget {
             final name = monthNamesTa[i];
             final label = name.length < 3 ? name : name.substring(0, 3);
             return Expanded(
-              child: Center(child: Text(label, style: const TextStyle(fontSize: 9, color: AppColors.muted))),
+              child: Center(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.clip,
+                  softWrap: false,
+                  style: const TextStyle(fontSize: 8.5, color: AppColors.muted),
+                ),
+              ),
             );
           }),
         ),
