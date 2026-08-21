@@ -18,13 +18,13 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   int index = 0;
   bool fabOpen = false;
 
-  final pages = const [
-    HomePage(),
-    TransactionsPage(),
-    CategoryPage(),
-    MonthlyPage(),
-    SettingsPage(),
-  ];
+  List<Widget> get pages => [
+        HomePage(onSeeAllTransactions: () => setState(() { index = 1; fabOpen = false; })),
+        const TransactionsPage(),
+        const CategoryPage(),
+        const MonthlyPage(),
+        const SettingsPage(),
+      ];
 
   final titles = const ['🪙 கணக்கு தாள்', 'பரிவர்த்தனைகள்', 'வகை வாரியாக', 'மாதாந்திரம்', 'அமைப்புகள்'];
 
@@ -32,7 +32,17 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(title: Text(titles[index])),
+      appBar: AppBar(
+        title: Text(titles[index]),
+        actions: index == 0
+            ? [
+                const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                  child: Icon(Icons.notifications_none_rounded, color: AppColors.text2),
+                ),
+              ]
+            : null,
+      ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 260),
         switchInCurve: Curves.easeOutCubic,
