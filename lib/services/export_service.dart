@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/models.dart';
+import 'tamil_pdf_shaping.dart';
 
 class ExportService {
   static Future<void> exportExcel(List<Entry> entries, Map<String, Category> catMap) async {
@@ -63,24 +64,24 @@ class ExportService {
       pw.MultiPage(
         theme: pdfTheme,
         build: (context) => [
-          pw.Header(text: 'கணக்கு தாள்'),
-          pw.Text('பெயர்: $userName   ஊர்: $accountName'),
+          pw.Header(text: reorderTamilForPdf('கணக்கு தாள்')),
+          pw.Text(reorderTamilForPdf('பெயர்: $userName   ஊர்: $accountName')),
           pw.SizedBox(height: 10),
           pw.Row(children: [
-            pw.Text('வருமானம்: ${income.toStringAsFixed(2)}   '),
-            pw.Text('செலவு: ${expense.toStringAsFixed(2)}   '),
-            pw.Text('இருப்பு: ${bal.toStringAsFixed(2)}'),
+            pw.Text(reorderTamilForPdf('வருமானம்: ${income.toStringAsFixed(2)}   ')),
+            pw.Text(reorderTamilForPdf('செலவு: ${expense.toStringAsFixed(2)}   ')),
+            pw.Text(reorderTamilForPdf('இருப்பு: ${bal.toStringAsFixed(2)}')),
           ]),
           pw.SizedBox(height: 14),
           pw.Table.fromTextArray(
-            headers: ['தேதி', 'விவரம்', 'வகை', 'வகை-type', 'தொகை'],
+            headers: ['தேதி', 'விவரம்', 'வகை', 'வரவு/செலவு', 'தொகை'].map(reorderTamilForPdf).toList(),
             data: sorted.map((e) {
               final cat = catMap[e.category];
               return [
                 e.date,
-                e.desc,
-                cat?.name ?? e.category,
-                e.type == 'income' ? 'வருமானம்' : 'செலவு',
+                reorderTamilForPdf(e.desc),
+                reorderTamilForPdf(cat?.name ?? e.category),
+                reorderTamilForPdf(e.type == 'income' ? 'வருமானம்' : 'செலவு'),
                 e.amount.toStringAsFixed(2),
               ];
             }).toList(),
