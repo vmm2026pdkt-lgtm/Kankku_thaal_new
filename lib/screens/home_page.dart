@@ -82,8 +82,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             children: [
               const Icon(Icons.receipt_long_rounded, size: 17, color: AppColors.gold),
               const SizedBox(width: 8),
-              Text('சமீபத்திய பரிவர்த்தனைகள்', style: AppText.h2),
-              const Spacer(),
+              Expanded(
+                child: Text('சமீபத்திய பரிவர்த்தனைகள்',
+                    style: AppText.h2, maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+              const SizedBox(width: 8),
               if (recent.isNotEmpty)
                 Material(
                   color: Colors.transparent,
@@ -344,7 +347,7 @@ class _QuickActionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(label, style: AppText.body.copyWith(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                    Text(subtitle, style: AppText.caption.copyWith(fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(subtitle, style: AppText.caption.copyWith(fontSize: 9.5), maxLines: 2, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
