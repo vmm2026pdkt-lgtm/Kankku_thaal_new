@@ -34,14 +34,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       extendBody: true,
       appBar: AppBar(
         title: Text(titles[index]),
-        actions: index == 0
-            ? [
-                const Padding(
-                  padding: EdgeInsets.only(right: 14),
-                  child: Icon(Icons.notifications_none_rounded, color: AppColors.text2),
-                ),
-              ]
-            : null,
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 260),
@@ -59,7 +51,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       floatingActionButton: index != 4
           ? Padding(padding: const EdgeInsets.only(bottom: 78), child: _buildFab())
           : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: SafeArea(
         top: false,
         child: _GlassBottomNav(

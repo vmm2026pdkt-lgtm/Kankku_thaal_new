@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:excel/excel.dart' as xls;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
@@ -51,8 +52,16 @@ class ExportService {
     final expense = sorted.where((e) => e.type == 'expense').fold(0.0, (s, e) => s + e.amount);
     final bal = income - expense;
 
+    // Embed a Tamil-capable font — the pdf package's default core fonts
+    // (Helvetica) don't have Tamil glyphs, which is why exports were
+    // showing broken/missing-glyph boxes for Tamil text.
+    final tamilFontData = await rootBundle.load('assets/fonts/NotoSansTamil-Regular.ttf');
+    final tamilFont = pw.Font.ttf(tamilFontData);
+    final pdfTheme = pw.ThemeData.withFont(base: tamilFont, bold: tamilFont);
+
     doc.addPage(
       pw.MultiPage(
+        theme: pdfTheme,
         build: (context) => [
           pw.Header(text: 'கணக்கு தாள்'),
           pw.Text('பெயர்: $userName   ஊர்: $accountName'),

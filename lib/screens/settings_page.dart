@@ -345,27 +345,64 @@ class _CategoryManageTile extends ConsumerWidget {
     );
   }
 
+  static const _iconChoices = [
+    '🍚', '🛒', '⛽', '🚌', '🔧', '💊', '📚', '💡', '🏡', '👗',
+    '📱', '📦', '💼', '🏪', '💻', '🏦', '➕', '🎬', '✈️', '🎁',
+    '⚽', '🎵', '🏥', '🎓', '🐾', '🎂', '☕', '🍔', '🚗', '🏠',
+    '💳', '📌',
+  ];
+
   void _addCat(BuildContext context, WidgetRef ref) {
     String type = 'expense';
-    final iconCtrl = TextEditingController(text: '📌');
+    String selectedIcon = '📌';
     final nameCtrl = TextEditingController();
     showDialog(context: context, builder: (ctx) => StatefulBuilder(builder: (ctx, setSt) => AlertDialog(
       backgroundColor: AppColors.surface,
       title: const Text('புதிய வகை'),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        Row(children: [
-          Expanded(child: ChoiceChip(label: const Text('வருமானம்'), selected: type == 'income', onSelected: (_) => setSt(() => type = 'income'))),
-          const SizedBox(width: 8),
-          Expanded(child: ChoiceChip(label: const Text('செலவு'), selected: type == 'expense', onSelected: (_) => setSt(() => type = 'expense'))),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Row(children: [
+            Expanded(child: ChoiceChip(label: const Text('வருமானம்'), selected: type == 'income', onSelected: (_) => setSt(() => type = 'income'))),
+            const SizedBox(width: 8),
+            Expanded(child: ChoiceChip(label: const Text('செலவு'), selected: type == 'expense', onSelected: (_) => setSt(() => type = 'expense'))),
+          ]),
+          const SizedBox(height: 14),
+          Align(alignment: Alignment.centerLeft, child: Text('ஐகான் தேர்ந்தெடு', style: AppText.label)),
+          const SizedBox(height: 8),
+          Container(
+            constraints: const BoxConstraints(maxHeight: 160),
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 8, runSpacing: 8,
+                children: _iconChoices.map((icon) {
+                  final selected = icon == selectedIcon;
+                  return GestureDetector(
+                    onTap: () => setSt(() => selectedIcon = icon),
+                    child: Container(
+                      width: 44, height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: selected ? AppColors.gold.withOpacity(0.25) : AppColors.surface2,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: selected ? AppColors.gold : AppColors.border, width: selected ? 2 : 1),
+                      ),
+                      child: Text(icon, style: const TextStyle(fontSize: 20)),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'வகை பெயர்')),
         ]),
-        TextField(controller: iconCtrl, decoration: const InputDecoration(labelText: 'ஐகான்')),
-        TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'வகை பெயர்')),
-      ]),
+      ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('ரத்து')),
         TextButton(onPressed: () {
           if (nameCtrl.text.trim().isEmpty) return;
-          ref.read(categoriesProvider.notifier).addCustom(type, iconCtrl.text.trim(), nameCtrl.text.trim());
+          ref.read(categoriesProvider.notifier).addCustom(type, selectedIcon, nameCtrl.text.trim());
           Navigator.pop(ctx);
         }, child: const Text('சேர்')),
       ],
