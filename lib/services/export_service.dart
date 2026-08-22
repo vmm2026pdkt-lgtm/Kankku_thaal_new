@@ -55,10 +55,17 @@ class ExportService {
 
     // Embed a Tamil-capable font — the pdf package's default core fonts
     // (Helvetica) don't have Tamil glyphs, which is why exports were
-    // showing broken/missing-glyph boxes for Tamil text.
+    // showing broken/missing-glyph boxes for Tamil text. The Tamil font
+    // itself has no Latin glyphs, so add Helvetica as a fallback for any
+    // English words mixed into descriptions (e.g. "Opening Balance").
     final tamilFontData = await rootBundle.load('assets/fonts/NotoSansTamil-Regular.ttf');
     final tamilFont = pw.Font.ttf(tamilFontData);
-    final pdfTheme = pw.ThemeData.withFont(base: tamilFont, bold: tamilFont);
+    final latinFallback = pw.Font.helvetica();
+    final pdfTheme = pw.ThemeData.withFont(
+      base: tamilFont,
+      bold: tamilFont,
+      fontFallback: [latinFallback],
+    );
 
     doc.addPage(
       pw.MultiPage(
