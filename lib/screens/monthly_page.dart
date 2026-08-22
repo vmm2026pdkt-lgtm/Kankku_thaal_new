@@ -39,7 +39,14 @@ class _MonthlyPageState extends ConsumerState<MonthlyPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(icon: const Icon(Icons.chevron_left, color: AppColors.text2), onPressed: () => setState(() => year--)),
-              Text('$year', style: AppText.h2),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.calendar_today_rounded, size: 15, color: AppColors.gold),
+                  const SizedBox(width: 6),
+                  Text('$year', style: AppText.h2),
+                ],
+              ),
               IconButton(icon: const Icon(Icons.chevron_right, color: AppColors.text2), onPressed: () => setState(() => year++)),
             ],
           ),

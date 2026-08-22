@@ -41,7 +41,14 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(icon: const Icon(Icons.chevron_left, color: AppColors.text2), onPressed: () => setState(() => month = DateTime(month.year, month.month - 1))),
-              Text(DateFormat('MMMM yyyy').format(month), style: AppText.h2),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.calendar_month_rounded, size: 16, color: AppColors.gold),
+                  const SizedBox(width: 6),
+                  Text(DateFormat('MMMM yyyy').format(month), style: AppText.h2),
+                ],
+              ),
               IconButton(icon: const Icon(Icons.chevron_right, color: AppColors.text2), onPressed: () => setState(() => month = DateTime(month.year, month.month + 1))),
             ],
           ),

@@ -193,14 +193,29 @@ class _TxTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(entry.desc, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.body.copyWith(fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 2),
-                        Text(categoryName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption),
+                        const SizedBox(height: 3),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.local_offer_rounded, size: 10, color: AppColors.muted),
+                            const SizedBox(width: 4),
+                            Flexible(child: Text(categoryName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption)),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text('${isIncome ? '+' : '-'}${fmt(entry.amount)}',
-                      style: AppText.amount.copyWith(color: color, fontSize: 14.5)),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('${isIncome ? '+' : '-'}${fmt(entry.amount)}',
+                          style: AppText.amount.copyWith(color: color, fontSize: 14.5)),
+                      const SizedBox(height: 2),
+                      const Icon(Icons.chevron_right, size: 16, color: AppColors.muted),
+                    ],
+                  ),
                 ],
               ),
             ),
